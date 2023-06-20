@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 BIND_ADDRESS=${BIND_ADDRESS:-0.0.0.0}
 BIND_PORT=${BIND_PORT:-8443}
 
