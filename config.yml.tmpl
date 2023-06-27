@@ -57,6 +57,9 @@ static_resources:
             validation_context:
               trusted_ca:
                 filename: /usr/local/etc/envoy/target-tls.crt
+            alpn_protocols:
+            - h2
+            - http/1.1
   clusters:
   - name: cluster
     connect_timeout: 15s
@@ -84,3 +87,6 @@ static_resources:
           validation_context:
             trusted_ca:
               filename: /usr/local/etc/envoy/target-tls.crt
+          alpn_protocols:
+          - h2
+          - http/1.1
