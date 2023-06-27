@@ -13,7 +13,7 @@ BIND_PORT=${BIND_PORT:-8443}
 
 echo "${BIND_TLS_CERT_B64}" | base64 -d > /usr/local/etc/envoy/bind-tls.crt
 echo "${BIND_TLS_KEY_B64}" | base64 -d > /usr/local/etc/envoy/bind-tls.key
-echo "${TARGET_TLS_CERT_B64}" | base64 -d > /usr/local/etc/envoy/target-tls.cert
+echo "${TARGET_TLS_CERT_B64}" | base64 -d > /usr/local/etc/envoy/target-tls.crt
 
 sed \
   -e "s/__TMPL_BIND_ADDRESS__/$BIND_ADDRESS/g" \
