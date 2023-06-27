@@ -47,7 +47,7 @@ static_resources:
               - match:
                   prefix: /
                 route:
-                  cluster: apiserver
+                  cluster: cluster
                   timeout: 2592000s
       transport_socket:
         name: envoy.transport_sockets.tls
