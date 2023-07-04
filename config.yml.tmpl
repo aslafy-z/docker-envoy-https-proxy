@@ -54,6 +54,10 @@ static_resources:
                 route:
                   cluster: cluster-h2
                   timeout: 2592000s
+          http2_protocol_options:
+            max_concurrent_streams: 100
+            initial_stream_window_size: 65536
+            initial_connection_window_size: 65536
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
@@ -70,6 +74,7 @@ static_resources:
             alpn_protocols:
             - h2
             - http/1.1
+    per_connection_buffer_limit_bytes: 10240
   clusters:
   - name: cluster-h1
     type: LOGICAL_DNS
@@ -98,6 +103,7 @@ static_resources:
               filename: /usr/local/etc/envoy/target-tls.crt
           alpn_protocols:
           - http/1.1
+    per_connection_buffer_limit_bytes: 10240
   - name: cluster-h2
     type: LOGICAL_DNS
     dns_lookup_family: V4_ONLY
@@ -126,3 +132,4 @@ static_resources:
           alpn_protocols:
           - h2
           - http/1.1
+    per_connection_buffer_limit_bytes: 10240
