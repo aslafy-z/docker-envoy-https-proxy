@@ -41,7 +41,8 @@ static_resources:
               - match:
                   headers:
                   - name: Upgrade
-                  - exact_match: Upgrade
+                  - string_match:
+                      exact: Upgrade
                     name: Connection
                   prefix: /
                 route:
