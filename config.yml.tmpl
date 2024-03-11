@@ -11,9 +11,13 @@ static_resources:
           "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
           codec_type: auto
           stat_prefix: ingress_http
-          stream_idle_timeout: 3600s
-          request_timeout: 3600s
-          request_headers_timeout: 3600s
+          use_remote_address: true
+          stream_idle_timeout: 60s
+          request_timeout: 60s
+          request_headers_timeout: 60s
+          http2_protocol_options:
+            initial_stream_window_size: 65536 # 64 KiB
+            initial_connection_window_size: 1048576 # 1 MiB
           http_filters:
           - name: envoy.filters.http.router
             typed_config:
@@ -57,12 +61,9 @@ static_resources:
                 route:
                   cluster: cluster-h2
                   timeout: 60s
+                  idle_timeout: 60s
                   retry_policy:
                     retry_on: reset
-          http2_protocol_options:
-            max_concurrent_streams: 100
-            initial_stream_window_size: 65536
-            initial_connection_window_size: 65536
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
@@ -79,7 +80,7 @@ static_resources:
             alpn_protocols:
             - h2
             - http/1.1
-    per_connection_buffer_limit_bytes: 10240
+    per_connection_buffer_limit_bytes: 32768 # 32 KiB
   clusters:
   - name: cluster-h1
     type: LOGICAL_DNS
