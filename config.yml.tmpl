@@ -78,7 +78,6 @@ static_resources:
               trusted_ca:
                 filename: /usr/local/etc/envoy/target-tls.crt
             alpn_protocols:
-            - h2
             - http/1.1
     per_connection_buffer_limit_bytes: 32768 # 32 KiB
   clusters:
@@ -136,6 +135,6 @@ static_resources:
             trusted_ca:
               filename: /usr/local/etc/envoy/target-tls.crt
           alpn_protocols:
-          - h2
           - http/1.1
+          - http/2
     per_connection_buffer_limit_bytes: 10240
