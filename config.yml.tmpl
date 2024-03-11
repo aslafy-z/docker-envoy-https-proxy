@@ -12,9 +12,12 @@ static_resources:
           codec_type: auto
           stat_prefix: ingress_http
           use_remote_address: true
-          stream_idle_timeout: 3600s
-          request_timeout: 3600s
-          request_headers_timeout: 3600s
+          stream_idle_timeout: 60s
+          request_timeout: 60s
+          request_headers_timeout: 60s
+          http2_protocol_options:
+            initial_stream_window_size: 65536 # 64 KiB
+            initial_connection_window_size: 1048576 # 1 MiB
           http_filters:
           - name: envoy.filters.http.router
             typed_config:
@@ -56,8 +59,11 @@ static_resources:
               - match:
                   prefix: /
                 route:
-                  cluster: cluster-h1
-                  timeout: 3600s
+                  cluster: cluster-h2
+                  timeout: 60s
+                  idle_timeout: 60s
+                  retry_policy:
+                    retry_on: reset
       transport_socket:
         name: envoy.transport_sockets.tls
         typed_config:
@@ -73,7 +79,7 @@ static_resources:
                 filename: /usr/local/etc/envoy/target-tls.crt
             alpn_protocols:
             - http/1.1
-    per_connection_buffer_limit_bytes: 10240
+    per_connection_buffer_limit_bytes: 32768 # 32 KiB
   clusters:
   - name: cluster-h1
     type: LOGICAL_DNS
@@ -102,4 +108,33 @@ static_resources:
               filename: /usr/local/etc/envoy/target-tls.crt
           alpn_protocols:
           - http/1.1
+    per_connection_buffer_limit_bytes: 10240
+  - name: cluster-h2
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    typed_extension_protocol_options:
+      envoy.extensions.upstreams.http.v3.HttpProtocolOptions:
+        "@type": type.googleapis.com/envoy.extensions.upstreams.http.v3.HttpProtocolOptions
+        explicit_http_config:
+          http2_protocol_options: {}
+    load_assignment:
+      cluster_name: cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: __TMPL_TARGET_HOST__
+                port_value: __TMPL_TARGET_PORT__
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+        common_tls_context:
+          validation_context:
+            trusted_ca:
+              filename: /usr/local/etc/envoy/target-tls.crt
+          alpn_protocols:
+          - http/1.1
+          - http/2
     per_connection_buffer_limit_bytes: 10240
