@@ -1,6 +1,6 @@
 FROM busybox:uclibc as busybox
 
-FROM envoyproxy/envoy:v1.29-latest
+FROM envoyproxy/envoy:v1.33-latest
 
 COPY --from=busybox /bin/sh /bin/sh
 COPY --from=busybox /bin/sed /bin/sed
